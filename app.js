@@ -3,7 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var md5=require('./md5.js');
 var get_imgs=0;
-function get_links_from_url(target_url){
+function get_links_from_url(target_url,fps){
 
 	var links=new Array();
 	http.get(target_url, function (res) {
@@ -81,6 +81,7 @@ function get_links_from_url(target_url){
 										if(this_img_index<images_length){
 											console.log('正在处理获取图片:'+ok_images[this_img_index]);
 											//
+
 											require('http').get(ok_images[this_img_index], function (res) {
 												var type='binary';
 												res.setEncoding(type);
@@ -94,21 +95,29 @@ function get_links_from_url(target_url){
 														fs.writeFile('images'+'/'+filename+'.png',img_data,type, function (err) {
 														    console.log('get img ok');
 														    this_img_index++;
-															getimg();
+															setTimeout(function(){
+																getimg();
+															},fps);
 														});
 													}catch(e){
 													    console.log('write img err');
 													    this_img_index++;
-														getimg();
+														setTimeout(function(){
+															getimg();
+														},fps);
 													}
 
 												});
 										        res.on('error', function(e) { 
 													console.log('Got that pesky error trapped') ;
 													this_img_index++;
-													getimg();
+													setTimeout(function(){
+														getimg();
+													},fps);
 												});
 											});
+
+											
 											//
 
 										}else{
@@ -137,4 +146,4 @@ function get_links_from_url(target_url){
 	});
 }
 
-get_links_from_url('http://www.codetyphon.com');
+get_links_from_url('http://www.codetyphon.com',600);
